@@ -1,0 +1,22 @@
+from transformers import pipeline
+
+sentiment_labels = ["Love", "Laughter", "Anger", "Compassion", "Disgust", "Fear", "Heroism", "Wonder", "Peace"]
+
+classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+
+def get_top_sentiments(text):
+    result = classifier(text, candidate_labels=sentiment_labels)
+
+    sorted_result = sorted(zip(result['labels'], result['scores']), key=lambda x: x[1], reverse=True)
+
+    top_sentiments = {sorted_result[i][0]: f"{int(sorted_result[i][1] * 100)}%" for i in range(3)}
+
+    return top_sentiments
+
+# Example input
+text = "The world is a beautiful place full of joy and compassion."
+
+output = get_top_sentiments(text)
+
+# Result
+print(output)
